@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Screenshot API: Premium website screenshot capture service with Cloudflare bypass. Developed by @ISmartCoder.">
+    <meta name="keywords" content="Screenshot API, website capture, Cloudflare bypass, web screenshot service">
+    <meta name="author" content="@ISmartCoder">
+    <title>Smart Screenshot API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
+    <link rel="icon" href="https://i.ibb.co/Hh4kF2b/icon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://i.ibb.co/Hh4kF2b/icon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta property="og:title" content="Smart Screenshot API">
+    <meta property="og:description" content="Premium website screenshot capture with Cloudflare bypass">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        :root {
+            --primary-gold: #FFD700;
+            --primary-gold-dark: #FFB300;
+            --accent-cyan: #00FFF5;
+            --accent-cyan-dark: #00CCC4;
+            --accent-purple: #9D4EDD;
+            --accent-green: #00FF88;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B8B8B8;
+            --text-muted: #6B7280;
+            --bg-dark: #0A0A0F;
+            --bg-darker: #050508;
+            --bg-card: #16161F;
+            --bg-card-hover: #1E1E2D;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glow-gold: 0 0 30px rgba(255, 215, 0, 0.3);
+            --glow-cyan: 0 0 30px rgba(0, 255, 245, 0.3);
+            --glow-green: 0 0 30px rgba(0, 255, 136, 0.3);
+            --glow-purple: 0 0 30px rgba(157, 78, 221, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 20% 10%, rgba(157, 78, 221, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 90%, rgba(0, 255, 245, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(255, 215, 0, 0.05) 0px, transparent 50%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .animated-bg span {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            animation: float 15s infinite ease-in-out;
+            opacity: 0.2;
+            filter: blur(60px);
+        }
+
+        .animated-bg span:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .animated-bg span:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        .animated-bg span:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            bottom: 10%;
+            left: 50%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-30px, 30px) scale(0.9); }
+        }
+
+        .hero {
+            position: relative;
+            padding: 4rem 1rem 3rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--glow-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .hero-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 245, 0.4);
+        }
+
+        .hero-badge img {
+            height: 22px;
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--accent-cyan) 50%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            text-shadow: 0 0 80px rgba(255, 215, 0, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 500;
+            line-height: 1.7;
+            padding: 0 1rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: nowrap;
+            padding: 0 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            min-width: 100px;
+            flex: 1;
+            max-width: 160px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-gold);
+            box-shadow: var(--glow-gold);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--glow-gold);
+        }
+
+        .stat-icon i {
+            font-size: 1.2rem;
+            color: var(--bg-dark);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .main-content {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out 0.2s forwards;
+        }
+
+        /* Live Demo Section */
+        .demo-section {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .demo-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-form {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-group-custom {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-wrapper label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-control-custom::placeholder {
+            color: var(--text-muted);
+        }
+
+        .select-custom {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23B8B8B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .select-custom option {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-wrapper:hover {
+            border-color: var(--accent-purple);
+        }
+
+        .checkbox-custom {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-label i {
+            margin-right: 0.5rem;
+            color: var(--accent-purple);
+        }
+
+        .btn-capture {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            border: none;
+            border-radius: 14px;
+            color: var(--bg-dark);
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+            margin-top: 1rem;
+        }
+
+        .btn-capture:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 255, 136, 0.5);
+        }
+
+        .btn-capture:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-capture i {
+            font-size: 1.2rem;
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .result-header {
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .result-badge {
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            text-transform: uppercase;
+        }
+
+        .result-info {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            border-color: var(--accent-cyan);
+        }
+
+        .result-image-container {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            background: repeating-conic-gradient(rgba(255,255,255,0.03) 0% 25%, transparent 0% 50%) 50% / 20px 20px;
+        }
+
+        .result-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .error-message {
+            padding: 1.5rem;
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            border-radius: 12px;
+            color: #ff6b6b;
+            text-align: center;
+        }
+
+        .error-message i {
+            margin-right: 0.5rem;
+        }
+
+        /* Features Section */
+        .features-section {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+        }
+
+        .features-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.75rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-6px);
+            border-color: var(--primary-gold);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+        }
+
+        .feature-icon {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            border-radius: 14px;
+            font-size: 1.5rem;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 8px 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .feature-icon i {
+            color: var(--text-primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* API Docs */
+        .api-docs {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .api-docs h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .accordion-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            background: transparent !important;
+            color: var(--text-primary) !important;
+            font-weight: 600;
+            padding: 1.5rem;
+            border-radius: 16px !important;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: none !important;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, var(--accent-cyan-dark), var(--accent-purple)) !important;
+            color: var(--bg-dark) !important;
+        }
+
+        .accordion-button::after {
+            filter: brightness(10);
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            filter: brightness(0);
+        }
+
+        .api-method-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            border-radius: 12px;
+            font-size: 1.3rem;
+            box-shadow: var(--glow-gold);
+            flex-shrink: 0;
+        }
+
+        .api-method-icon i {
+            color: var(--bg-dark);
+        }
+
+        .accordion-body {
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .accordion-body pre {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: 10px;
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 1rem;
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .param-table th,
+        .param-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .param-table th {
+            color: var(--primary-gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .param-name {
+            color: var(--accent-cyan);
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .param-required {
+            color: #ff6b6b;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .param-optional {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Quality Section */
+        .quality-section {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(0, 255, 245, 0.2));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .quality-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .quality-section h2 i {
+            margin-right: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .quality-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .quality-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .quality-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .quality-res {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(0, 255, 245, 0.2));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .contact-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-section p {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-section .btn {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: var(--text-primary);
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 14px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 40px rgba(157, 78, 221, 0.4);
+            position: relative;
+            z-index: 1;
+            border: none;
+            text-decoration: none;
+        }
+
+        .contact-section .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 50px rgba(157, 78, 221, 0.6);
+            color: var(--text-primary);
+        }
+
+        .contact-section .btn i {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 1rem 1.5rem;
+            text-align: center;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out 0.4s forwards;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-social a {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .footer-social a:hover {
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            color: var(--bg-dark);
+            transform: translateY(-4px) rotate(10deg);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .footer-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+
+        .footer-text strong {
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .footer-text a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .footer-text a:hover {
+            color: var(--primary-gold);
+        }
+
+        .copyright {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+            .quality-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .feature-card {
+                padding: 1.5rem 1rem;
+            }
+            .feature-card h3 {
+                font-size: 1rem;
+            }
+            .feature-card p {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 3rem 1rem 2rem;
+            }
+            .hero-stats {
+                gap: 0.5rem;
+                padding: 0 0.25rem;
+            }
+            .stat-item {
+                padding: 0.75rem 0.5rem;
+                min-width: 80px;
+                border-radius: 12px;
+            }
+            .stat-icon {
+                width: 35px;
+                height: 35px;
+            }
+            .stat-icon i {
+                font-size: 1rem;
+            }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            .quality-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .feature-card {
+                padding: 1rem 0.75rem;
+            }
+            .feature-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+            .feature-card h3 {
+                font-size: 0.85rem;
+                margin-bottom: 0.5rem;
+            }
+            .feature-card p {
+                font-size: 0.75rem;
+                line-height: 1.5;
+            }
+            .input-group-custom {
+                flex-direction: column;
+            }
+            .input-wrapper {
+                min-width: 100%;
+            }
+            .demo-section,
+            .features-section,
+            .api-docs,
+            .quality-section,
+            .contact-section {
+                padding: 2rem 1.25rem;
+                border-radius: 20px;
+            }
+            .result-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-badge {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+            .hero-badge img {
+                height: 18px;
+            }
+            .hero-stats {
+                gap: 0.4rem;
+            }
+            .stat-item {
+                min-width: 70px;
+                padding: 0.6rem 0.4rem;
+            }
+            .stat-number {
+                font-size: 1rem;
+            }
+            .stat-label {
+                font-size: 0.6rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            .quality-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .feature-card {
+                padding: 1.25rem;
+            }
+            .feature-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            .feature-card h3 {
+                font-size: 1rem;
+            }
+            .feature-card p {
+                font-size: 0.85rem;
+            }
+            .quality-card {
+                padding: 1rem;
+            }
+            .quality-name {
+                font-size: 1rem;
+            }
+            .quality-res {
+                font-size: 0.8rem;
+            }
+            .accordion-button {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+            .api-method-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+            .accordion-body {
+                padding: 1.25rem;
+            }
+            .accordion-body pre {
+                font-size: 0.75rem;
+                padding: 0.75rem;
+            }
+            .param-table th,
+            .param-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .footer-social a {
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-top-color: var(--bg-dark);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .btn-capture.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-capture.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card-hover);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <span><strong>Crafted by @ISmartCoder</strong></span>
+                <img src="https://www.crossed-flag-pins.com/animated-flag-gif/gifs/Bangladesh_240-animated-flag-gifs.gif" alt="Bangladesh Flag">
+            </div>
+            <h1>Smart Screenshot API</h1>
+            <p class="hero-subtitle">Capture stunning website screenshots with Cloudflare bypass support. Multiple resolutions from HD to WQHD - all powered by innovation.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fad fa-bolt"></i>
+                    </div>
+                    <span class="stat-number">Fast</span>
+                    <span class="stat-label">Lightning Speed</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fad fa-shield-check"></i>
+                    </div>
+                    <span class="stat-number">Bypass</span>
+                    <span class="stat-label">Cloudflare</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fad fa-expand-arrows-alt"></i>
+                    </div>
+                    <span class="stat-number">4K</span>
+                    <span class="stat-label">Resolution</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content">
+        <div class="container">
+            <!-- Live Demo Section -->
+            <div class="demo-section">
+                <h2><i class="fad fa-rocket"></i> Try It Live</h2>
+                <div class="demo-form">
+                    <div class="input-group-custom">
+                        <div class="input-wrapper" style="flex: 2;">
+                            <label for="urlInput"><i class="fad fa-globe"></i> Website URL</label>
+                            <input type="text" id="urlInput" class="form-control-custom" placeholder="https://example.com" value="https://google.com">
+                        </div>
+                        <div class="input-wrapper">
+                            <label for="qualitySelect"><i class="fad fa-cog"></i> Quality</label>
+                            <select id="qualitySelect" class="form-control-custom select-custom">
+                                <option value="low">LOW (1280×720)</option>
+                                <option value="hd" selected>HD (1920×1080)</option>
+                                <option value="fhd">FHD (1920×1080)</option>
+                                <option value="wqhd">WQHD (2560×1440)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="bypassCheck" class="checkbox-custom">
+                        <span class="checkbox-label"><i class="fad fa-shield-alt"></i> Enable Cloudflare Bypass (slower but works on protected sites)</span>
+                    </label>
+                    <button id="captureBtn" class="btn-capture" onclick="captureScreenshot()">
+                        <span class="btn-text"><i class="fad fa-camera"></i> Capture Screenshot</span>
+                        <div class="spinner"></div>
+                    </button>
+                </div>
+                <div id="resultContainer" class="result-container">
+                    <div id="resultContent"></div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h2>Why Choose Smart Screenshot API?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fad fa-tachometer-alt-fastest"></i>
+                        </div>
+                        <h3>Lightning Fast</h3>
+                        <p>Capture screenshots in seconds with optimized headless browser rendering.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fad fa-shield-alt"></i>
+                        </div>
+                        <h3>Cloudflare Bypass</h3>
+                        <p>Built-in cloudscraper integration for protected websites.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fad fa-expand-arrows-alt"></i>
+                        </div>
+                        <h3>Multiple Resolutions</h3>
+                        <p>From 720p to WQHD - choose the perfect quality for your needs.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fad fa-clock"></i>
+                        </div>
+                        <h3>Auto Cleanup</h3>
+                        <p>Files automatically expire after 60 seconds to save storage.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fad fa-code"></i>
+                        </div>
+                        <h3>Simple API</h3>
+                        <p>RESTful API with straightforward parameters and JSON responses.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fad fa-server"></i>
+                        </div>
+                        <h3>Self-Hosted</h3>
+                        <p>Run on your own server with full control and privacy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Options -->
+            <div class="quality-section">
+                <h2><i class="fad fa-sliders-h"></i> Available Quality Options</h2>
+                <div class="quality-grid">
+                    <div class="quality-card">
+                        <div class="quality-name">LOW</div>
+                        <div class="quality-res">1280 × 720</div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-name">HD</div>
+                        <div class="quality-res">1920 × 1080</div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-name">FHD</div>
+                        <div class="quality-res">1920 × 1080</div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-name">WQHD</div>
+                        <div class="quality-res">2560 × 1440</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Documentation -->
+            <div class="api-docs">
+                <h2>API Documentation</h2>
+                <div class="accordion" id="apiDocsAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#screenshotMethod">
+                                <div class="api-method-icon">
+                                    <i class="fad fa-camera"></i>
+                                </div>
+                                GET /web/ss
+                            </button>
+                        </h2>
+                        <div id="screenshotMethod" class="accordion-collapse collapse show" data-bs-parent="#apiDocsAccordion">
+                            <div class="accordion-body">
+                                <p>Capture a screenshot of any website with customizable quality and optional Cloudflare bypass.</p>
+                                <table class="param-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="param-name">url</span><span class="param-required">required</span></td>
+                                            <td>string</td>
+                                            <td>The website URL to capture</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="param-name">quality</span><span class="param-optional">optional</span></td>
+                                            <td>string</td>
+                                            <td>low | hd | fhd | wqhd (default: hd)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="param-name">bypass</span><span class="param-optional">optional</span></td>
+                                            <td>boolean</td>
+                                            <td>Enable Cloudflare bypass (default: false)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p><strong>Example Request:</strong></p>
+                                <pre>curl -X GET "http://your-api:3674/web/ss?url=https://example.com&quality=hd&bypass=false"</pre>
+                                <p><strong>Example Response:</strong></p>
+                                <pre>{
+  "success": true,
+  "url": "https://example.com",
+  "quality": "HD",
+  "resolution": "1920x1080",
+  "screenshot": "http://your-api:3674/file/abc123",
+  "file_id": "abc123",
+  "filename": "abc123_example_com_hd_20260111_120000.png",
+  "size": 245678,
+  "cloudflare_bypass": false,
+  "expires_in": "60 seconds",
+  "timestamp": "2026-01-11T12:00:00.000000",
+  "dev": "@ISmartCoder",
+  "updates": "@abirxdhackz"
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fileMethod">
+                                <div class="api-method-icon">
+                                    <i class="fad fa-file-image"></i>
+                                </div>
+                                GET /file/{file_id}
+                            </button>
+                        </h2>
+                        <div id="fileMethod" class="accordion-collapse collapse" data-bs-parent="#apiDocsAccordion">
+                            <div class="accordion-body">
+                                <p>Retrieve a captured screenshot by its file ID. Files expire after 60 seconds.</p>
+                                <table class="param-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="param-name">file_id</span><span class="param-required">required</span></td>
+                                            <td>string</td>
+                                            <td>The unique file identifier returned from /web/ss</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p><strong>Example Request:</strong></p>
+                                <pre>curl -X GET "http://your-api:3674/file/abc123" --output screenshot.png</pre>
+                                <p><strong>Response:</strong> PNG image file</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="contact-section">
+                <h2>Need Custom Solutions? 🚀</h2>
+                <p>Looking for custom API development, bot creation, or automation solutions? Get in touch for professional development services.</p>
+                <a href="https://t.me/abirxdhackz" class="btn">
+                    <span>Connect with Developer</span>
+                    <i class="fad fa-paper-plane-top"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-social">
+                <a href="https://github.com/TheSmartDevs" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://facebook.com/abirxdhackz" target="_blank" title="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://instagram.com/abirxdhackz" target="_blank" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://twitter.com/abirxdhackz" target="_blank" title="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://youtube.com/@abirxdhackz" target="_blank" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://t.me/abirxdhackz" target="_blank" title="Telegram">
+                    <i class="fab fa-telegram"></i>
+                </a>
+            </div>
+            <p class="footer-text">
+                Built with <strong>passion</strong> and <strong>innovation</strong> by <a href="https://t.me/abirxdhackz" target="_blank">@ISmartCoder 🇧🇩</a>
+                <br>
+                Join our thriving <strong>developer community</strong>: <a href="https://t.me/TheSmartDev" target="_blank">t.me/TheSmartDev</a>
+            </p>
+            <div class="copyright">
+                © 2026 Smart Screenshot API. All Rights Reserved. | Powered by FastAPI & Python
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? `http://${window.location.hostname}:3674`
+            : window.location.origin.includes('lovable') 
+                ? 'http://127.0.0.1:3674'
+                : window.location.origin;
+
+        async function captureScreenshot() {
+            const urlInput = document.getElementById('urlInput');
+            const qualitySelect = document.getElementById('qualitySelect');
+            const bypassCheck = document.getElementById('bypassCheck');
+            const captureBtn = document.getElementById('captureBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultContent = document.getElementById('resultContent');
+
+            const url = urlInput.value.trim();
+            if (!url) {
+                showError('Please enter a valid URL');
+                return;
+            }
+
+            captureBtn.classList.add('loading');
+            captureBtn.disabled = true;
+            resultContainer.classList.remove('show');
+
+            try {
+                const params = new URLSearchParams({
+                    url: url,
+                    quality: qualitySelect.value,
+                    bypass: bypassCheck.checked
+                });
+
+                const response = await fetch(`${API_BASE}/web/ss?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess(data);
+                } else {
+                    showError(data.detail || 'Failed to capture screenshot');
+                }
+            } catch (error) {
+                showError(`Connection failed: ${error.message}. Make sure the API is running on ${API_BASE}`);
+            } finally {
+                captureBtn.classList.remove('loading');
+                captureBtn.disabled = false;
+            }
+        }
+
+        function showSuccess(data) {
+            const resultContent = document.getElementById('resultContent');
+            const resultContainer = document.getElementById('resultContainer');
+
+            resultContent.innerHTML = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-meta">
+                            <span class="result-badge"><i class="fad fa-check-circle"></i> ${data.quality}</span>
+                            <span class="result-info"><i class="fad fa-expand"></i> ${data.resolution} • <i class="fad fa-file"></i> ${formatBytes(data.size)}</span>
+                        </div>
+                        <div class="result-actions">
+                            <a href="${data.screenshot}" target="_blank" class="btn-action">
+                                <i class="fad fa-external-link"></i> Open
+                            </a>
+                            <a href="${data.screenshot}" download="${data.filename}" class="btn-action">
+                                <i class="fad fa-download"></i> Download
+                            </a>
+                            <button onclick="copyToClipboard('${data.screenshot}')" class="btn-action">
+                                <i class="fad fa-copy"></i> Copy URL
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-image-container">
+                        <img src="${data.screenshot}" alt="Screenshot" class="result-image" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect fill=%22%23333%22 width=%22400%22 height=%22300%22/><text fill=%22%23888%22 x=%22200%22 y=%22150%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>Failed to load image</text></svg>'">
+                    </div>
+                </div>
+            `;
+            resultContainer.classList.add('show');
+        }
+
+        function showError(message) {
+            const resultContent = document.getElementById('resultContent');
+            const resultContainer = document.getElementById('resultContainer');
+
+            resultContent.innerHTML = `
+                <div class="error-message">
+                    <i class="fad fa-exclamation-triangle"></i> ${message}
+                </div>
+            `;
+            resultContainer.classList.add('show');
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target.closest('.btn-action');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fad fa-check"></i> Copied!';
+                btn.style.background = 'var(--accent-green)';
+                btn.style.color = 'var(--bg-dark)';
+                btn.style.borderColor = 'var(--accent-green)';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            });
+        }
+
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                captureScreenshot();
+            }
+        });
+    </script>
+</body>
+</html>
