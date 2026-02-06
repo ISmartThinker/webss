@@ -13,6 +13,13 @@
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.11"
+    "PYTHON_VERSION": "3.11",
+    "PLAYWRIGHT_BROWSERS_PATH": "/tmp/ms-playwright"
+  },
+  "functions": {
+    "api.py": {
+      "maxDuration": 60,
+      "memory": 3008
+    }
   }
 }
