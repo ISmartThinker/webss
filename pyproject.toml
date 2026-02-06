@@ -1,7 +1,7 @@
 [project]
 name = "tmpfiles"
 version = "1.0.0"
-description = "Async FastAPI-based Website ScreenShot  Downloader Api"
+description = "Async FastAPI-based Website ScreenShot Downloader Api"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -10,6 +10,7 @@ dependencies = [
     "jinja2",
     "cloudscraper",
     "uvloop",
+    "playwright>=1.40.0",
 ]
 
 [project.scripts]
