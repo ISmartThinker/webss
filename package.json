@@ -1,0 +1,7 @@
+{
+  "name": "tmpfiles",
+  "version": "1.0.0",
+  "scripts": {
+    "vercel-build": "chmod +x build.sh && ./build.sh"
+  }
+}
