@@ -2,3 +2,4 @@ fastapi
 uvicorn
 uvloop
 cloudscraper
+jinja2
